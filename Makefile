@@ -35,4 +35,3 @@ lint: .venv
 		echo "================================"; \
 		false)
 .PHONY: lint
-
