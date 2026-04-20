@@ -52,6 +52,7 @@ def dummy_rule():
                 "event": "validation",
             }
         ],
+        "description": "Flags invoices with missing IDs.",
     }
 
 

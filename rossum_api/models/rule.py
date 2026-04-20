@@ -445,6 +445,8 @@ class Rule:
     actions
         List of :class:`~rossum_api.models.rule.RuleAction` objects.
         See `Rule actions <https://rossum.app/api/docs/openapi/api/rule/>`_.
+    description
+        Free-form description of the rule (max 255 chars, empty string if unset).
 
     References
     ----------
@@ -465,6 +467,7 @@ class Rule:
     rule_template: str | None = None
     synchronized_from_template: bool = False
     actions: list[RuleAction] = field(default_factory=list)
+    description: str = ""
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> Rule:
