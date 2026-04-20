@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v3.13.3 (2026-04-20)
+
+### Bug Fixes
+
+- Add missing description field to Rule resource
+  ([`a359b6e`](https://github.com/rossumai/rossum-api/commit/a359b6e47c4c30e49420d6482582c2cb3c83735a))
+
+
 ## v3.13.2 (2026-04-16)
 
 ### Bug Fixes
