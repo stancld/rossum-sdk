@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v3.14.0 (2026-05-25)
+
+### Features
+
+- **client**: Add list_rules_execution_logs
+  ([`b7ac68e`](https://github.com/rossumai/rossum-api/commit/b7ac68e3478e55b301854062d763109fc500473c))
+
+
 ## v3.13.3 (2026-04-20)
 
 ### Bug Fixes

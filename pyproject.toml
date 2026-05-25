@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "rossum_api"
-version = "3.13.3"
+version = "3.14.0"
 license = {text = "MIT"}
 readme = "README.rst"
 description = "Python API client for the Rossum platform."
@@ -50,9 +50,11 @@ docs = [
   "sphinx-autodoc-typehints",
 ]
 
+
 [tools.setuptools]
 include-package-data = true
 packages = ["find"]
+
 
 [tool.pytest.ini_options]
 minversion = "7.0"
