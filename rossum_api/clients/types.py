@@ -64,6 +64,10 @@ RelationOrdering: TypeAlias = Literal["type", "parent", "key"]
 
 RuleOrdering: TypeAlias = Literal["id", "name", "organization"]
 
+RulesExecutionLogOrdering: TypeAlias = Literal[
+    "rule_id", "queue_id", "annotation_id", "created_at", "execution_result"
+]
+
 SchemaOrdering: TypeAlias = Literal["id"]
 
 UserOrdering: TypeAlias = Literal[

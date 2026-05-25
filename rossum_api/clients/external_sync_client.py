@@ -50,6 +50,7 @@ from rossum_api.models.organization_limit import OrganizationLimit
 from rossum_api.models.queue import Queue
 from rossum_api.models.relation import Relation
 from rossum_api.models.rule import Rule
+from rossum_api.models.rules_execution_logs import RulesExecutionLog
 from rossum_api.models.schema import Schema
 from rossum_api.models.task import Task
 from rossum_api.models.upload import Upload
@@ -73,6 +74,7 @@ from rossum_api.types import (
     OrganizationType,
     QueueType,
     RelationType,
+    RulesExecutionLogType,
     RuleType,
     SchemaType,
     TaskType,
@@ -100,6 +102,7 @@ if TYPE_CHECKING:
         QueueOrdering,
         RelationOrdering,
         RuleOrdering,
+        RulesExecutionLogOrdering,
         SchemaOrdering,
         UserOrdering,
         UserRoleOrdering,
@@ -130,6 +133,7 @@ class SyncRossumAPIClient(
         QueueType,
         RelationType,
         RuleType,
+        RulesExecutionLogType,
         SchemaType,
         TaskType,
         UploadType,
@@ -2074,6 +2078,51 @@ class SyncRossumAPIClient(
         """
         return self.internal_client.delete(Resource.Rule, rule_id)
 
+    # ##### RULES EXECUTION LOGS #####
+
+    def list_rules_execution_logs(
+        self, ordering: Sequence[RulesExecutionLogOrdering] = (), **filters: Any
+    ) -> Iterator[RulesExecutionLogType]:
+        """Retrieve all :class:`~rossum_api.models.rules_execution_logs.RulesExecutionLog` objects.
+
+        The iterator transparently fetches subsequent pages until exhausted.
+
+        Parameters
+        ----------
+        ordering
+            List of object names. Their URLs are used for sorting the results.
+        filters
+            rule: ID of a :class:`~rossum_api.models.rule.Rule` (or multiple IDs,
+            comma-separated).
+
+            queue: ID of a :class:`~rossum_api.models.queue.Queue`.
+
+            annotation: ID of a :class:`~rossum_api.models.annotation.Annotation`.
+
+            created_at_before: ISO 8601 timestamp, filter logs created before this time.
+
+            created_at_after: ISO 8601 timestamp, filter logs created after this time.
+
+            execution_result: ``success`` | ``failure`` | ``partial_success``
+            (or multiple values, comma-separated).
+
+            trigger_event: Trigger event (or multiple events, comma-separated).
+
+            request_id: Filter by exact request ID.
+
+            search: Full text search across log entry fields.
+
+            page_size: Number of results per page (1-100, default 100).
+
+        References
+        ----------
+        https://rossum.app/api/docs/openapi/api/rules-execution-log/
+        """
+        for d in self.internal_client.fetch_resources(
+            Resource.RulesExecutionLog, ordering, **filters
+        ):
+            yield self._deserializer(Resource.RulesExecutionLog, d)
+
     # ##### USER ROLES #####
 
     def list_user_roles(
@@ -2139,6 +2188,7 @@ SyncRossumAPIClientWithDefaultDeserializer = SyncRossumAPIClient[
     Queue,
     Relation,
     Rule,
+    RulesExecutionLog,
     Schema,
     Task,
     Upload,
