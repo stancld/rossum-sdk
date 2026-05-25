@@ -29,6 +29,7 @@ class Resource(Enum):
     Queue = "queues"
     Relation = "relations"
     Rule = "rules"
+    RulesExecutionLog = "rules_execution_logs"
     Schema = "schemas"
     Task = "tasks"
     Upload = "uploads"

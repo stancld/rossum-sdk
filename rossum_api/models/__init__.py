@@ -22,6 +22,7 @@ from rossum_api.models.organization_group import OrganizationGroup
 from rossum_api.models.queue import Queue
 from rossum_api.models.relation import Relation
 from rossum_api.models.rule import Rule
+from rossum_api.models.rules_execution_logs import RulesExecutionLog
 from rossum_api.models.schema import Schema
 from rossum_api.models.task import Task
 from rossum_api.models.upload import Upload
@@ -60,6 +61,7 @@ RESOURCE_TO_MODEL = {
     Resource.Queue: Queue,
     Resource.Relation: Relation,
     Resource.Rule: Rule,
+    Resource.RulesExecutionLog: RulesExecutionLog,
     Resource.Schema: Schema,
     Resource.Task: Task,
     Resource.Upload: Upload,

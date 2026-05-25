@@ -60,10 +60,7 @@ class TestRelations:
         http_client.fetch_all.return_value = mock_generator(dummy_relation)
 
         relations = client.list_relations(
-            type=RelationType.EDIT.value,
-            parent=123,
-            key=None,
-            annotation=456,
+            type=RelationType.EDIT.value, parent=123, key=None, annotation=456
         )
 
         async for r in relations:
@@ -104,10 +101,7 @@ class TestRelationsSync:
         http_client.fetch_resources.return_value = iter((dummy_relation,))
 
         relations = client.list_relations(
-            type=RelationType.EDIT.value,
-            parent=123,
-            key=None,
-            annotation=456,
+            type=RelationType.EDIT.value, parent=123, key=None, annotation=456
         )
 
         for r in relations:
