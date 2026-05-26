@@ -72,3 +72,15 @@ def build_organization_limits_url(id_: int) -> str:
 
 def build_resource_processing_duration_url(resource: Resource, id_: int) -> str:
     return f"{resource.value}/{id_}/processing_duration"
+
+
+def build_automation_insights_url(queue_id: int) -> str:
+    return f"queues/{queue_id}/automation_setup_current_stats"
+
+
+def build_automation_projections_url(queue_id: int) -> str:
+    return f"queues/{queue_id}/automation_setup_projections"
+
+
+def build_queue_automation_targets_url(queue_id: int) -> str:
+    return f"queues/{queue_id}/automation_targets"

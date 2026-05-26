@@ -21,7 +21,10 @@ from rossum_api.domain_logic.search import build_search_params, validate_search_
 from rossum_api.domain_logic.tasks import is_task_succeeded
 from rossum_api.domain_logic.urls import (
     EMAIL_IMPORT_URL,
+    build_automation_insights_url,
+    build_automation_projections_url,
     build_organization_limits_url,
+    build_queue_automation_targets_url,
     build_resource_cancel_url,
     build_resource_confirm_url,
     build_resource_content_operations_url,
@@ -110,6 +113,15 @@ if TYPE_CHECKING:
         WorkspaceOrdering,
     )
     from rossum_api.models import Deserializer, ResponsePostProcessor
+    from rossum_api.models.automation import (
+        AutomationProjections,
+        AutomationSetupExcludeBlocker,
+        AutomationStats,
+        AutomationTarget,
+        AutomationTargetType,
+        DatapointAutomationTarget,
+        FieldErrorRateLimit,
+    )
     from rossum_api.types import HttpMethod, Sideload
 
 
@@ -2186,6 +2198,123 @@ class AsyncRossumAPIClient(
             Resource.RulesExecutionLog, ordering, **filters
         ):
             yield self._deserializer(Resource.RulesExecutionLog, d)
+
+    # ##### QUEUE AUTOMATION #####
+
+    async def retrieve_automation_insights(self, queue_id: int) -> AutomationStats:
+        """Retrieve current automation statistics for a queue.
+
+        Parameters
+        ----------
+        queue_id
+            ID of the queue.
+
+        References
+        ----------
+        https://rossum.app/api/docs/openapi/api/queue/#retrieve-automation-statistics
+        """
+        data = await self._http_client.request_json("GET", build_automation_insights_url(queue_id))
+        return self._deserializer(Resource.AutomationStats, data)
+
+    async def retrieve_automation_projections(
+        self,
+        queue_id: int,
+        fields: Sequence[FieldErrorRateLimit],
+        exclude_blockers: Sequence[AutomationSetupExcludeBlocker] = (),
+    ) -> AutomationProjections:
+        """Project automation statistics for a queue given per-field error-rate limits.
+
+        Parameters
+        ----------
+        queue_id
+            ID of the queue.
+        fields
+            Per-field error-rate limits to project against.
+        exclude_blockers
+            Blocker types to exclude from the projection (``error_message`` and/or ``extension``).
+
+        References
+        ----------
+        https://rossum.app/api/docs/openapi/api/queue/#retrieve-automation-projections
+        """
+        payload = {
+            "fields": [
+                {"schema_id": f.schema_id, "error_rate_limit": f.error_rate_limit} for f in fields
+            ]
+        }
+        kwargs: dict[str, Any] = {"json": payload}
+        if exclude_blockers:
+            kwargs["params"] = {"exclude_blockers": ",".join(exclude_blockers)}
+        data = await self._http_client.request_json(
+            "POST",
+            build_automation_projections_url(queue_id),
+            **kwargs,
+        )
+        return self._deserializer(Resource.AutomationProjections, data)
+
+    async def list_automation_targets(self, queue_id: int) -> AsyncIterator[AutomationTarget]:
+        """List saved automation targets for a queue.
+
+        Parameters
+        ----------
+        queue_id
+            ID of the queue.
+
+        References
+        ----------
+        https://rossum.app/api/docs/openapi/api/queue/#list-automation-targets
+        """
+        data = await self._http_client.request_json(
+            "GET", build_queue_automation_targets_url(queue_id)
+        )
+        for target in data.get("results", []):
+            yield self._deserializer(Resource.AutomationTarget, target)
+
+    async def create_new_automation_target(
+        self,
+        queue_id: int,
+        automation_rate_target: float,
+        error_rate_target: float,
+        datapoint_automation_targets: Sequence[DatapointAutomationTarget],
+        target_type: AutomationTargetType = "automation_assistant_v1",
+    ) -> None:
+        """Create a new automation target for a queue.
+
+        Parameters
+        ----------
+        queue_id
+            ID of the queue.
+        automation_rate_target
+            Target automation rate (0.0 - 1.0).
+        error_rate_target
+            Target error rate (0.0 - 1.0).
+        datapoint_automation_targets
+            Per-field targets.
+        target_type
+            ``automation_assistant_v1`` for the assistant flow, ``legacy_thresholds`` for direct
+            per-field threshold configuration.
+
+        References
+        ----------
+        https://rossum.app/api/docs/openapi/api/queue/#save-automation-target
+        """
+        payload = {
+            "automation_rate_target": automation_rate_target,
+            "error_rate_target": error_rate_target,
+            "datapoint_automation_targets": [
+                {
+                    "schema_id": t.schema_id,
+                    "error_rate_target": t.error_rate_target,
+                    "confidence_threshold": t.confidence_threshold,
+                    "error_rate_limit": t.error_rate_limit,
+                }
+                for t in datapoint_automation_targets
+            ],
+            "type": target_type,
+        }
+        await self._http_client.request(
+            "POST", build_queue_automation_targets_url(queue_id), json=payload
+        )
 
     # ##### USER ROLES #####
     async def list_user_roles(
