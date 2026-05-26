@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v3.15.0 (2026-05-26)
+
+### Features
+
+- **client**: Add queue automation setup and targets endpoints
+  ([`043e82b`](https://github.com/rossumai/rossum-api/commit/043e82bf84dc5409eefb4b197014f45a6ecf5b2d))
+
+
 ## v3.14.0 (2026-05-25)
 
 ### Features
